@@ -1,6 +1,5 @@
 module Api
   class FeaturesController < ApplicationController
-    
     def create_comment
       feature = Feature.find_by(id: params[:feature_id])
     
@@ -22,6 +21,19 @@ module Api
         render json: { error: "Failed to save comment" }, status: :unprocessable_entity
       end
     end
+
+    def get_comments
+      feature = Feature.find_by(id: params[:feature_id])
+
+      unless feature
+        render json: { error: "Feature not found" }, status: :not_found
+        return
+      end
+
+      comments = Comment.where(feature_id: feature.id)
+      render json: { comments: comments }, status: :ok
+    end
+
     def index
       features = Feature.all
       features = filter_by_mag_type(features)
