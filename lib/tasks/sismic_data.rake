@@ -22,7 +22,7 @@ namespace :fetch do
             mag_type: feature_properties["magType"],
             title: feature_properties["title"],
             longitude: feature_geometry[0],
-            latitude: feature_geometry[1]
+            latitude: feature_geometry[1],
         )
 
         if feature.save
@@ -34,4 +34,4 @@ namespace :fetch do
       puts "Sismic data fetched and saved to MongoDB"
     end
   end
-  
+   

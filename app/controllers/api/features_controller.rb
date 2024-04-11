@@ -1,5 +1,27 @@
 module Api
   class FeaturesController < ApplicationController
+    
+    def create_comment
+      feature = Feature.find_by(id: params[:feature_id])
+    
+      unless feature
+        render json: { error: "Feature not found" }, status: :not_found
+        return
+      end
+    
+      if params[:body].blank?
+        render json: { error: "Comment body cannot be blank" }, status: :unprocessable_entity
+        return
+      end
+    
+      comment = Comment.new(feature_id: feature.id, body: params[:body])
+    
+      if comment.save
+        render json: comment, status: :created
+      else
+        render json: { error: "Failed to save comment" }, status: :unprocessable_entity
+      end
+    end
     def index
       features = Feature.all
       features = filter_by_mag_type(features)
@@ -48,9 +70,9 @@ module Api
     private
 
     def filter_by_mag_type(features)
-      if params[:filters].present? && params[:filters][:mag_type].present?
+      if params[:mag_type].present?
         valid_mag_types = %w(md ml ms mw me mi mb mlg)
-        mag_types = params[:filters][:mag_type].split(',').map(&:strip)
+        mag_types = params[:mag_type].split(',').map(&:strip)
     
         invalid_mag_types = mag_types - valid_mag_types
         if invalid_mag_types.present?
